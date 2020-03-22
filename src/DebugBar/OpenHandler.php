@@ -16,7 +16,24 @@ namespace DebugBar;
 class OpenHandler
 {
     protected $debugBar;
-
+    
+    /**
+     * accept filter keys
+     * @var array
+     */
+    protected $filterKeys = [
+        'utime',
+        'datetime',
+        'ip',
+        'uri',
+        'method',
+        'is_has_exception',
+        'sql',
+        'req_start_date_time',
+        'req_end_date_time',
+        'status_code',
+    ];
+    
     /**
      * @param DebugBar $debugBar
      * @throws DebugBarException
@@ -83,7 +100,7 @@ class OpenHandler
         }
 
         $filters = array();
-        foreach (array('utime', 'datetime', 'ip', 'uri', 'method') as $key) {
+        foreach ($this->filterKeys as $key) {
             if (isset($request[$key])) {
                 $filters[$key] = $request[$key];
             }
