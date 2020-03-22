@@ -58,7 +58,7 @@ if (typeof(PhpDebugBar) == 'undefined') {
                         self.hide();
                     });
                 });
-                
+
             this.addSearch();
 
             this.$overlay = $('<div />').addClass(csscls('overlay')).hide().appendTo('body');
@@ -72,7 +72,7 @@ if (typeof(PhpDebugBar) == 'undefined') {
             this.$loadmorebtn.show();
             this.find({}, 0, this.handleFind.bind(this));
         },
-        
+
         addSearch: function(){
             var self = this;
             var searchBtn = $('<button />')
@@ -92,11 +92,24 @@ if (typeof(PhpDebugBar) == 'undefined') {
                     e.preventDefault();
                 });
 
+            // get default request start time (3minutes ago)
+            let startDate = new Date((new Date).getTime() - 3*60*1000);
+            let startTime = startDate.getFullYear()
+                +("0" + startDate.getMonth()).slice(-2)
+                +("0" + startDate.getDate()).slice(-2)
+                +' ' + ("0" + startDate.getHours()).slice(-2)
+                + ':' + ("0" + startDate.getMinutes()).slice(-2)
+                + ':00';
+
             $('<form />')
                 .append('<br/><b>Filter results</b><br/>')
                 .append('Method: <select name="method"><option></option><option>GET</option><option>POST</option><option>PUT</option><option>DELETE</option></select><br/>')
-                .append('Uri: <input type="text" name="uri"><br/>')
-                .append('IP: <input type="text" name="ip"><br/>')
+                .append('Request Time Start: <input type="text" name="req_start_date_time" value="" placeholder="' + startTime + '" style="width: 150px"><br/>')
+                .append('Request Time End: <input type="text" name="req_end_date_time" style="width: 150px"><br/>')
+                .append('HasOccurException: <input type="checkbox" name="is_has_exception" value="1"><br/>')
+                .append('Uri: <input placeholder="* to match any char(not support regex)" type="text" name="uri" style="width: 300px"><br/>')
+                .append('Sql: <input placeholder="support regex" type="input" name="sql" style="width: 300px"><br/>')
+                .append('IP: <input type="text" name="ip" style="width: 300px"><br/>')
                 .append(searchBtn)
                 .appendTo(this.$actions);
         },
@@ -104,16 +117,16 @@ if (typeof(PhpDebugBar) == 'undefined') {
         handleFind: function(data) {
             var self = this;
             $.each(data, function(i, meta) {
-               var a = $('<a />')
+                var a = $('<a />')
                     .text('Load dataset')
                     .on('click', function(e) {
-                       self.hide();
-                       self.load(meta['id'], function(data) {
-                           self.callback(meta['id'], data);
-                       });
-                       e.preventDefault();
+                        self.hide();
+                        self.load(meta['id'], function(data) {
+                            self.callback(meta['id'], data);
+                        });
+                        e.preventDefault();
                     });
-                    
+
                 var method = $('<a />')
                     .text(meta['method'])
                     .on('click', function(e) {
@@ -147,7 +160,7 @@ if (typeof(PhpDebugBar) == 'undefined') {
                         self.find({uri: meta['uri']}, 0, self.handleFind.bind(self));
                         e.preventDefault();
                     });
-                    
+
                 $('<tr />')
                     .append('<td>' + meta['datetime'] + '</td>')
                     .append('<td>' + meta['method'] + '</td>')
